@@ -2,7 +2,8 @@
 // design.md DEMO leaf. The headline release r-1042 reproduces the §8 fixture:
 // onboarding before n1=420 c1=298 (71%), after n2=455 c2=241 (53%) → ROLLBACK.
 
-import type { FlowEvent, ReleaseCut } from "./types.ts";
+import type { FlowEvent, ReleaseCut, VerdictCard } from "./types.ts";
+import { buildVerdictCard } from "./verdict.ts";
 
 const DAY = 1000 * 60 * 60 * 24;
 
@@ -115,4 +116,20 @@ export function buildHoldEvents(): FlowEvent[] {
   emitFunnel(out, "signup", 180, 144, t - 7 * DAY, 7 * DAY, rnd, "su-b"); // 80%
   emitFunnel(out, "signup", 44, 20, t, 7 * DAY, rnd, "su-a");             // ~45%, n=44
   return out;
+}
+
+// The three seeded verdicts, computed by the same engine as /demo. Keyed by
+// releaseId so a public permalink (/v/<id>) renders a real card even when no
+// telemetry store is connected in this environment.
+export function demoCardFor(releaseId: string): VerdictCard | null {
+  switch (releaseId) {
+    case DEMO_CUT.releaseId:
+      return buildVerdictCard(buildDemoEvents(), DEMO_CUT);
+    case DEMO_CUT_HOLD.releaseId:
+      return buildVerdictCard(buildHoldEvents(), DEMO_CUT_HOLD);
+    case DEMO_CUT_HEALTHY.releaseId:
+      return buildVerdictCard(buildHealthyEvents(), DEMO_CUT_HEALTHY);
+    default:
+      return null;
+  }
 }

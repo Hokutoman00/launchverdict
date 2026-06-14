@@ -2,6 +2,7 @@ import Link from "next/link";
 import VerdictCard from "../../../components/VerdictCard.tsx";
 import type { VerdictCard as Card } from "../../../lib/types.ts";
 import { dbConfigured, loadVerdict } from "../../../lib/db.ts";
+import { demoCardFor } from "../../../lib/demo-data.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -13,13 +14,22 @@ export default async function VerdictPage({
   const { releaseId } = await params;
 
   let card: Card | null = null;
+  let seeded = false;
   if (dbConfigured()) {
     card = (await loadVerdict(releaseId)) as Card | null;
+  }
+  // No live store (or no row): fall back to the seeded fixture for a known
+  // demo release so a public permalink renders a real card. Labeled as seeded.
+  if (!card) {
+    card = demoCardFor(releaseId);
+    seeded = card !== null;
   }
 
   return (
     <main className="wrap">
-      <div className="eyebrow">LaunchVerdict · verdict</div>
+      <div className="eyebrow">
+        LaunchVerdict · verdict{seeded ? " (seeded demo)" : ""}
+      </div>
       {card ? (
         <>
           <h1 style={{ marginBottom: 24 }}>{releaseId}</h1>

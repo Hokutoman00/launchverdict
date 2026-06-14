@@ -28,9 +28,10 @@ prose and can never change the verdict or the numbers.
 
 ## See it in 60 seconds
 
-`/demo` computes two real verdict cards from seeded telemetry — no login. One
-release regressed onboarding (71%→53% → **ROLL IT BACK**), one improved search
-(**KEEP SHIPPING**).
+[Live demo](https://launchverdict.vercel.app/demo) computes three real verdict
+cards from seeded telemetry — no login. One release regressed onboarding
+(71%→53% → **ROLL IT BACK**), one dropped on too thin a sample to trust yet
+(80%→45%, n=44 → **HOLD**), one improved search (60%→70% → **KEEP SHIPPING**).
 
 ## Run locally
 
