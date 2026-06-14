@@ -1,0 +1,103 @@
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 3px;
+  padding: 22px 24px 20px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.call {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.headline {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 12px 0 18px;
+  line-height: 1.35;
+}
+
+/* before -> after rates */
+.rates {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  margin-bottom: 4px;
+}
+.rate { flex: 1; }
+.rateLabel {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.rateNum { font-size: 26px; font-weight: 600; }
+.after .rateNum { color: var(--accent); }
+.arrow { color: var(--muted); font-size: 22px; padding-bottom: 4px; }
+
+.bar {
+  height: 6px;
+  background: #000;
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.barFill { height: 100%; background: var(--muted); }
+.after .barFill { background: var(--accent); }
+
+.ci { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+.row {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+.row:first-of-type { margin-top: 18px; }
+.rowKey {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 2px;
+}
+.action { font-weight: 600; }
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.conf {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  padding: 3px 8px;
+}
+.note { font-size: 11px; color: var(--muted); max-width: 56ch; text-align: right; }

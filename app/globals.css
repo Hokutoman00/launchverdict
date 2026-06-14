@@ -1,0 +1,58 @@
+:root {
+  --bg: #0d0d0f;
+  --panel: #16161a;
+  --line: #2a2a30;
+  --ink: #f2f2f0;
+  --muted: #9a9aa2;       /* >= 4.5:1 on --bg */
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* the verdict color IS the accent — one signal at a time */
+  --rollback: #ff5a52;
+  --hold: #f5b544;
+  --shipon: #46d39a;
+  --insufficient: #8b8b93;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+a { color: inherit; }
+
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 56px 24px 96px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+h1 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 8px 0 6px;
+}
+
+.lede { color: var(--muted); font-size: 15px; max-width: 60ch; }
+
+.section-label {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 40px 0 14px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
