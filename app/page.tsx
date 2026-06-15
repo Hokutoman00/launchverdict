@@ -17,6 +17,11 @@ export default function Home() {
         LaunchVerdict renders the verdict <em>after</em> it ships. Together that&apos;s a
         closed release-confidence loop for solo makers.
       </p>
+      <p className="lede" style={{ marginTop: 16 }}>
+        Built for the maker who ships every week with an AI builder and no data
+        team — and dogfooded on its own repo, so the first release LaunchVerdict
+        judges is itself.
+      </p>
       <p style={{ marginTop: 28 }}>
         <Link
           href="/demo"
@@ -29,7 +34,7 @@ export default function Home() {
             letterSpacing: "0.02em",
           }}
         >
-          See two live verdicts → no login
+          See three live verdicts → no login
         </Link>
       </p>
     </main>

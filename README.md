@@ -13,7 +13,7 @@ moved number, the likely cause, and the one thing to do next — instead of a
 - **LaunchVerdict** renders the verdict *after* it ships (the effect).
 
 When connected to a repo, LaunchVerdict reads Novus's flags from the merged PR's
-review comments (author `NOVUS_BOT_LOGIN`) and surfaces the matching flag as the
+review comments (whose author login contains `NOVUS_BOT_LOGIN`, default `novus-ai`) and surfaces the matching flag as the
 *cause* line on the card — so the pre-merge warning and the post-ship outcome sit
 on one artifact. In the seeded `/demo` the Novus flag is a fixture string standing
 in for that comment; against a live repo it comes from the PR.
