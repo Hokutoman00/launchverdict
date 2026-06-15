@@ -12,13 +12,13 @@ moved number, the likely cause, and the one thing to do next — instead of a
 - **Novus** reviews the diff *before* you merge and flags UX regressions (the cause).
 - **LaunchVerdict** renders the verdict *after* it ships (the effect).
 
-LaunchVerdict reads Novus's flags from the merged PR's review comments (author
-`NOVUS_BOT_LOGIN`) and surfaces the matching flag as the *cause* line on the
-card — so the pre-merge warning and the post-ship outcome sit on one artifact.
-In the seeded `/demo` the Novus flag is a fixture string; against a live repo it
-comes from the PR.
+When connected to a repo, LaunchVerdict reads Novus's flags from the merged PR's
+review comments (author `NOVUS_BOT_LOGIN`) and surfaces the matching flag as the
+*cause* line on the card — so the pre-merge warning and the post-ship outcome sit
+on one artifact. In the seeded `/demo` the Novus flag is a fixture string standing
+in for that comment; against a live repo it comes from the PR.
 
-A "release" is treated as a **causal cut** on the event timeline. We compare each
+A "release" is treated as the **cut point** on the event timeline. We compare each
 flow's completion rate in the 7 days before vs after the cut with a
 **two-proportion z-test**, take the most-moved flow, and require *both*
 statistical significance and a meaningful drop before we say *roll back*. The
@@ -49,10 +49,12 @@ External integrations are guarded — see `.env.example`.
 The deterministic engine (stats → window → verdict, incl. SHIP-ON / HOLD /
 ROLLBACK / INSUFFICIENT) and the seeded `/demo` are covered by `npm test` and
 run with no accounts. The live wiring below (GitHub webhook → cut assembly →
-PR comment + commit status, Postgres telemetry, optional LLM prose polish)
-typechecks and runs `next build`, and is exercised once a repo + Postgres +
-GitHub token are connected — it is **not** stubbed, but the verdict *call* and
-*numbers* never depend on it: those come from the tested engine.
+PR comment + commit status, Postgres telemetry, optional LLM prose polish) is
+**implemented and typechecks/builds** — not stubbed — but the `/demo` data is
+seeded and the live external paths (Postgres, GitHub token, and the Novus
+PR-comment read) come online only once a repo + Postgres + token + Novus are
+connected. The verdict *call* and *numbers* never depend on any of it: those
+come from the tested engine.
 
 ## Wire the live loop
 

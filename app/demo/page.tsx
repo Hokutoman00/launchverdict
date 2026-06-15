@@ -36,12 +36,12 @@ export default function DemoPage() {
 
       <div className="section-label">How the call is made</div>
       <p className="lede">
-        A release is a causal cut on the event timeline. We compare each flow&apos;s
-        completion rate in the 7 days before vs after the cut with a two-proportion
-        z-test, take the most-moved flow, and require both significance (p&lt;0.05)
-        and a meaningful drop before we say <em>roll back</em>. The number is a
-        correlation under a known cause — the diff — not a proof. We label the
-        confidence and never fabricate a call when the data is thin.
+        We treat a release as the cut point on the event timeline. We compare each
+        flow&apos;s completion rate in the 7 days before vs after the cut with a
+        two-proportion z-test, take the most-moved flow, and require both
+        significance (p&lt;0.05) and a meaningful drop before we say <em>roll back</em>.
+        The number is a correlation under a known cause — the diff — not a proof. We
+        label the confidence and never fabricate a call when the data is thin.
       </p>
     </main>
   );
