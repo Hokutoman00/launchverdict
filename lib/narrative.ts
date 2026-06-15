@@ -9,6 +9,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import type { VerdictCard } from "./types.ts";
+import { pendoTrack } from "./pendo.ts";
 
 const MODEL = "claude-opus-4-8";
 
@@ -28,7 +29,14 @@ const TOOL = {
 
 export async function refineNarrative(card: VerdictCard): Promise<VerdictCard> {
   const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) return card;
+  if (!key) {
+    await pendoTrack("narrative_refined", {
+      release_id: card.releaseId, repo: card.repo, call: card.call,
+      refinement_succeeded: false, model_used: MODEL,
+      headline_changed: false, cause_changed: false, action_changed: false,
+    }, "system", card.repo);
+    return card;
+  }
 
   const facts = {
     call: card.call,
@@ -58,15 +66,35 @@ export async function refineNarrative(card: VerdictCard): Promise<VerdictCard> {
       ],
     });
     const block = res.content.find((b) => b.type === "tool_use");
-    if (!block || block.type !== "tool_use") return card;
+    if (!block || block.type !== "tool_use") {
+      await pendoTrack("narrative_refined", {
+        release_id: card.releaseId, repo: card.repo, call: card.call,
+        refinement_succeeded: false, model_used: MODEL,
+        headline_changed: false, cause_changed: false, action_changed: false,
+      }, "system", card.repo);
+      return card;
+    }
     const out = block.input as { headline?: string; cause?: string; action?: string };
-    return {
+    const refined = {
       ...card,
       headline: out.headline?.trim() || card.headline,
       cause: out.cause?.trim() || card.cause,
       action: out.action?.trim() || card.action,
     };
+    await pendoTrack("narrative_refined", {
+      release_id: card.releaseId, repo: card.repo, call: card.call,
+      refinement_succeeded: true, model_used: MODEL,
+      headline_changed: refined.headline !== card.headline,
+      cause_changed: refined.cause !== card.cause,
+      action_changed: refined.action !== card.action,
+    }, "system", card.repo);
+    return refined;
   } catch {
+    await pendoTrack("narrative_refined", {
+      release_id: card.releaseId, repo: card.repo, call: card.call,
+      refinement_succeeded: false, model_used: MODEL,
+      headline_changed: false, cause_changed: false, action_changed: false,
+    }, "system", card.repo);
     return card; // never let prose-polish break the deterministic verdict
   }
 }

@@ -3,6 +3,7 @@ import VerdictCard from "../../../components/VerdictCard.tsx";
 import type { VerdictCard as Card } from "../../../lib/types.ts";
 import { dbConfigured, loadVerdict } from "../../../lib/db.ts";
 import { demoCardFor } from "../../../lib/demo-data.ts";
+import { pendoTrack } from "../../../lib/pendo.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,18 @@ export default async function VerdictPage({
   if (!card) {
     card = demoCardFor(releaseId);
     seeded = card !== null;
+  }
+
+  if (card) {
+    await pendoTrack("verdict_card_viewed", {
+      release_id: releaseId,
+      repo: card.repo,
+      call: card.call,
+      confidence: card.confidence,
+      moved_flow: card.movedFlow,
+      is_seeded_demo: seeded,
+      source: seeded ? "demo" : "live",
+    }, "system", card.repo);
   }
 
   return (

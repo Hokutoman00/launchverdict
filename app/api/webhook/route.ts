@@ -6,6 +6,7 @@ import crypto from "node:crypto";
 import { makeOctokit, buildReleaseCut } from "../../../lib/github.ts";
 import { computeVerdictForCut, deliverVerdict } from "../../../lib/pipeline.ts";
 import { dbConfigured, ensureSchema } from "../../../lib/db.ts";
+import { pendoTrack } from "../../../lib/pendo.ts";
 
 export const runtime = "nodejs";
 
@@ -56,6 +57,15 @@ export async function POST(req: Request) {
   const cut = await buildReleaseCut(octokit, repo, releaseId, baseSha, headSha, cutTs, pr.number);
   const card = await computeVerdictForCut(cut);
   await deliverVerdict(card, headSha, pr.number, baseUrlFrom(req));
+
+  await pendoTrack("webhook_processed", {
+    repo,
+    release_id: releaseId,
+    call: card.call,
+    pr_number: pr.number,
+    event_type: "pull_request",
+    processing_succeeded: true,
+  }, pr.user?.login || "system", repo);
 
   return NextResponse.json({ ok: true, releaseId, call: card.call });
 }

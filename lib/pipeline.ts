@@ -4,6 +4,7 @@
 
 import type { ReleaseCut, VerdictCard } from "./types.ts";
 import { buildVerdictCard, calibrateThreshold } from "./verdict.ts";
+import { pendoTrack } from "./pendo.ts";
 import { computeFlowDeltas, dominantFlow, DEFAULT_WINDOW_MS } from "./window.ts";
 import { eventsAround, saveVerdict, loadThreshold, saveThreshold } from "./db.ts";
 import { refineNarrative } from "./narrative.ts";
@@ -27,6 +28,21 @@ export async function computeVerdictForCut(cut: ReleaseCut): Promise<VerdictCard
   const raw = buildVerdictCard(events, cut, threshold ?? undefined);
   const card = await refineNarrative(raw);
   await saveVerdict(card);
+
+  await pendoTrack("verdict_computed", {
+    repo: cut.repo,
+    release_id: cut.releaseId,
+    call: card.call,
+    confidence: card.confidence,
+    moved_flow: card.movedFlow,
+    before_rate: card.before,
+    after_rate: card.after,
+    ci_low: card.ciLow,
+    ci_high: card.ciHigh,
+    has_novus_cause: cut.novusFlags.length > 0,
+    has_narrative_refinement: raw.headline !== card.headline || raw.cause !== card.cause || raw.action !== card.action,
+  }, "system", cut.repo);
+
   return card;
 }
 
@@ -49,5 +65,16 @@ export async function trainThreshold(
   const old = (await loadThreshold(repo, flow)) ?? 0.05;
   const next = calibrateThreshold(old, observedDelta, followedAndRecovered);
   await saveThreshold(repo, flow, next);
+
+  await pendoTrack("threshold_calibrated", {
+    repo,
+    flow,
+    old_threshold: old,
+    new_threshold: next,
+    observed_delta: observedDelta,
+    followed_and_recovered: followedAndRecovered,
+    alpha: 0.3,
+  }, "system", repo);
+
   return next;
 }

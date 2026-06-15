@@ -5,6 +5,7 @@
 import { NextResponse } from "next/server";
 import { dbConfigured, ensureSchema, insertEvents } from "../../../lib/db.ts";
 import type { FlowEvent } from "../../../lib/types.ts";
+import { pendoTrack } from "../../../lib/pendo.ts";
 
 export const runtime = "nodejs";
 
@@ -39,5 +40,16 @@ export async function POST(req: Request) {
   for (const [repo, events] of byRepo) await insertEvents(repo, events);
 
   const accepted = [...byRepo.values()].reduce((n, l) => n + l.length, 0);
+
+  const repos = [...byRepo.keys()];
+  const allEvts = [...byRepo.values()].flat();
+  await pendoTrack("telemetry_events_ingested", {
+    repo: repos[0],
+    accepted_count: accepted,
+    beacon_count: beacons.length,
+    unique_flows: new Set(allEvts.map(e => e.flow)).size,
+    unique_steps: new Set(allEvts.map(e => e.step)).size,
+  }, "system", repos[0]);
+
   return NextResponse.json({ ok: true, accepted });
 }

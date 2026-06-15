@@ -7,6 +7,7 @@
 
 import { Octokit } from "@octokit/rest";
 import type { ReleaseCut, VerdictCard } from "./types.ts";
+import { pendoTrack } from "./pendo.ts";
 
 export function makeOctokit(token = process.env.GITHUB_TOKEN): Octokit {
   if (!token) throw new Error("GITHUB_TOKEN not set");
@@ -53,7 +54,19 @@ export async function buildReleaseCut(
       .map((c) => firstLine(c.body));
   }
 
-  return { releaseId, repo, cutTs, baseSha, headSha, changedFiles, novusFlags, ciFailures };
+  const cut: ReleaseCut = { releaseId, repo, cutTs, baseSha, headSha, changedFiles, novusFlags, ciFailures };
+
+  await pendoTrack("release_cut_assembled", {
+    repo,
+    release_id: releaseId,
+    changed_files_count: changedFiles.length,
+    novus_flags_count: novusFlags.length,
+    ci_failures: ciFailures,
+    pr_number: prNumber ?? 0,
+    has_novus_flags: novusFlags.length > 0,
+  }, "system", repo);
+
+  return cut;
 }
 
 export async function postVerdict(
@@ -79,6 +92,16 @@ export async function postVerdict(
       owner, repo: name, issue_number: prNumber, body: renderComment(card, verdictUrl),
     });
   }
+
+  await pendoTrack("verdict_delivered", {
+    repo: card.repo,
+    release_id: card.releaseId,
+    call: card.call,
+    commit_status_state: state,
+    has_pr_comment: prNumber != null,
+    pr_number: prNumber ?? 0,
+    verdict_url: verdictUrl,
+  }, "system", card.repo);
 }
 
 function renderComment(card: VerdictCard, url: string): string {
